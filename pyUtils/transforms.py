@@ -1,43 +1,10 @@
 from typing import Mapping, Any, Iterable, Union
-import time
-from functools import wraps, lru_cache
-from frozendict import frozendict
+from functools import lru_cache
 import logging
-import pathlib
-
+from .decorators import log_execution_time
 
 logger = logging.getLogger(__name__)
-# def freezeargs(func):
-#     """Convert a mutable dictionary into immutable.
-#         Useful to be compatible with lru_cache
-#         """
-#     @wraps(func)
-#     def wrapper(*args, **kwargs):
-#         arg_iterable = [arg for arg in args if isinstance(arg, Iterable)][0]
-#         not_iterable_args = (arg for arg in args if not isinstance(arg, Iterable))
-#         freeze_arg = tuple([frozendict(row) for row in arg_iterable])
-#
-#         args = freeze_arg + tuple(not_iterable_args)
-#         kwargs = {k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()}
-#         result = func(*args, **kwargs)
-#         return result
-#     return wrapper
 
-
-def log_execution_time(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        start_time = time.perf_counter()
-        try:
-            return func(*args, **kwargs)
-        finally:
-            duration = time.perf_counter() - start_time
-            logger.info(
-                "Function %s took %.6f seconds to execute",
-                func.__name__,
-                duration,
-            )
-    return wrapper
 
 @log_execution_time
 def get_column_stats(
@@ -70,7 +37,7 @@ def filter_rows(
         data: Iterable[Mapping[str, Any]],
         key: str,
         value: Any
-) -> list[Mapping]:
+) -> list[Mapping[str, Any]]:
     """ Filters records from list of dicts """
     logger.info(
         "Filtering records for key %s over value: %s ...",
@@ -126,19 +93,3 @@ def normalize(
         "Numeric records were successfully normalized!",
     )
     return normalized_data
-
-
-def load_json(path):
-    """ Safely loads list-of-dicts from JSON file """
-    p = pathlib.Path(path)
-
-
-def save_json(data, path):
-    """ Saves list-of-dicts to JSON file """
-
-
-
-
-
-
-

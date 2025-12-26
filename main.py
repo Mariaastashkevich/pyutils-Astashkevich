@@ -1,45 +1,33 @@
-# /// script
-# requires-python = ">=3.10"
-# dependencies = [
-#     "frozendict>=2.4.7",
-# ]
-# ///
 import logging
-from pyUtils import *
-from common import configure_logging
+from pyutils import *
+from logging_config import configure_logging
+import pathlib
 
 logger = logging.getLogger(__name__)
+
 
 def main():
     configure_logging(level=logging.INFO)
     logger.warning('Starting main()')
-    test_group_by = [
-        {'name': 'Alice', 'city': 'Minsk'},
-        {'name': 'Bob', 'city': 'Moskow'},
-        {'name': 'Kate', 'city': 'Dubai'},
-        {'name': 'Alex', 'city': 'Minsk'},
-        {'name': 'Maria', 'city': 'Moskow'},
-    ]
-    test_column_stats = [
-        {'name': 'Alice', 'age': 23},
-        {'name': 'Bob', 'age': 24},
-        {'name': 'Kate', 'age': 67},
-        {'name': 'Alex', 'age': 43},
-        {'name': 'Maria', 'age': 18},
-    ]
-    test_filter_rows = [
-        {'name': 'Alice', 'age': 23},
-        {'name': 'Bob', 'age': 24},
-        {'name': 'Kate', 'age': 67},
-        {'name': 'Alex', 'age': 23},
-        {'name': 'Maria', 'age': 23},
-    ]
+
+    path = pathlib.Path('tests/sample.json')
+    save_path = pathlib.Path('to_save.json')
     test_normalize = tuple([x for x in range(1, 1000)])
     normalize(test_normalize)
 
-    print(group_by(test_group_by, key='city'))
-    print(get_column_stats(test_column_stats, key='age'))
-    print(filter_rows(test_filter_rows, key='age', value=23))
+
+    print(f'Data from file {path.name!r}:')
+    data = load_json(path)
+    print(data)
+
+    print(get_column_stats(data, key='age'))
+    print(get_column_stats(data, key='salary'))
+
+    print(filter_rows(data, key='salary', value=5000))
+
+    print(group_by(data, key='salary'))
+
+    save_json(data, save_path)
 
     logger.warning('Finishing main()')
 
