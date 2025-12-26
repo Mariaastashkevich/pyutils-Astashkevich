@@ -64,7 +64,7 @@ def group_by(
         "Grouping records for key %s ...",
         key
     )
-    grouped_records = {}
+    grouped_records: dict[Any, list[Mapping[str, Any]]] = {}
     for item in data:
         item_key = item.get(key)
         if item_key not in grouped_records:
